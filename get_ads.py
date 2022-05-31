@@ -73,49 +73,51 @@ if st.button('Get Ads!'):
                 temp_ad_id = i.get('id')
                 temp_campaign_name = i.get('campaign').get('name')
                 temp_country = temp_campaign_name[0:3]
-                temp_adcreative_data = page_data[0].get('adcreatives').get('data')[0]
+                temp_adcreative_data = i.get('adcreatives').get('data')[0]
                 temp_adcreative_id = temp_adcreative_data.get('id')
                 temp_image_url = temp_adcreative_data.get('thumbnail_url')
                 # edit the temp_image_url in order to increase the thumbnail size:
-                temp_h = int(temp_image_url.split("&h=")[1].split("&")[0])
-                temp_w = int(temp_image_url.split("w=")[1].split("&h=")[0])
-                # get the rescaled image using fb business SDK call:
-                creative = AdCreative(temp_adcreative_id)
-                fields = [AdCreative.Field.thumbnail_url]
-                params = {
-                    'thumbnail_width': temp_w * scale_multiplier,
-                    'thumbnail_height': temp_h * scale_multiplier,
-                }
+                if 'https://video' in temp_image_url:
+                    params = {}
+                else:
+                    temp_h = int(temp_image_url.split("&h=")[1].split("&")[0])
+                    temp_w = int(temp_image_url.split("w=")[1].split("&h=")[0])
+                    # get the rescaled image using fb business SDK call:
+                    creative = AdCreative(temp_adcreative_id)
+                    fields = [AdCreative.Field.thumbnail_url]
+                    params = {
+                        'thumbnail_width': temp_w * scale_multiplier,
+                        'thumbnail_height': temp_h * scale_multiplier,
+                    }
                 creative.api_get(fields=fields, params=params)
                 temp_thumbnail_url = creative[AdCreative.Field.thumbnail_url]
                 # moving on to body and title:
-                temp_body = temp_adcreative_data.get('body')
-                temp_title = temp_adcreative_data.get('title')
-                if temp_body == None:
-                    # This means that the ad has multiple options for body and title. The process below will retrieve all the options-
-                    fields = [AdCreative.Field.asset_feed_spec]
-                    creative.api_get(fields=fields)
-                    asset_data = creative[AdCreative.Field.asset_feed_spec]._json
-                    bodies = asset_data.get('bodies')
-                    body_list = []
-                    for body in bodies:
-                        temp_body = body.get('text')
-                        body_list.append(temp_body)
-                    titles = asset_data.get('titles')
-                    title_list = []
-                    for title in titles:
-                        temp_title = title.get('text')
-                        title_list.append(temp_title)
-                    temp_body = str(body_list).replace('[','').replace(']','').replace(',','\n')
-                    temp_title = str(title_list).replace('[','').replace(']','').replace(',','\n')
+                # This means that the ad has multiple options for body and title. The process below will retrieve all the options-
+                fields = [AdCreative.Field.asset_feed_spec]
+                creative.api_get(fields=fields)
+                asset_data = creative[AdCreative.Field.asset_feed_spec]._json
+                bodies = asset_data.get('bodies')
+                body_list = []
+                for body in bodies:
+                    temp_body = body.get('text')
+                    print(temp_body)
+                    body_list.append(temp_body)
+                titles = asset_data.get('titles')
+                title_list = []
+                for title in titles:
+                    temp_title = title.get('text')
+                    title_list.append(temp_title)
+                temp_body = str(body_list).replace('[','').replace(']','').replace(',','\n')
+                temp_title = str(title_list).replace('[','').replace(']','').replace(',','\n')
+                
+            all_data_list_of_lists.append([temp_ad_name,temp_campaign_name,temp_country,temp_thumbnail_url,temp_body,temp_title])
                     
-                all_data_list_of_lists.append([temp_ad_name,temp_campaign_name,temp_country,temp_thumbnail_url,temp_body,temp_title])
-                        
-                next_page = data.get('paging').get('next')
-                if type(next_page) == str:
-                    r = requests.get(url = next_page)
-                    data = r.json()
-                    print('next data page retrieved')
+            next_page = data.get('paging').get('next')
+            if type(next_page) == str:
+                r = requests.get(url = next_page)
+                data = r.json()
+                print('next data page retrieved')
+                                
                                 
         all_active_ads = pd.DataFrame(all_data_list_of_lists, columns =["ad_name",'campaign_name', 'country','thumbnail','body','title'])
         for index, row in all_active_ads.iterrows():
