@@ -50,7 +50,7 @@ if st.button('Get Ads!'):
 
     URL = "https://graph.facebook.com/" + str(fb_version)+ "/act_"+ str(selected_act_id)+"/ads"
 
-    PARAMS = {'fields':"campaign{name},name,effective_status,adcreatives{title,body,thumbnail_url}",
+    PARAMS = {'fields':"campaign{name},name,effective_status,adcreatives{thumbnail_url}",
             "time_range":"{'since': '"+str(since_input)+"' ,'until': '"+str(until_input)+"'}",
             "level":"campaign",
             "limit": str(pagination_limit),
