@@ -110,7 +110,7 @@ if st.button('Get Ads!'):
                 temp_body = str(body_list).replace('[','').replace(']','').replace(',','\n')
                 temp_title = str(title_list).replace('[','').replace(']','').replace(',','\n')
                 
-            all_data_list_of_lists.append([temp_ad_name,temp_campaign_name,temp_country,temp_thumbnail_url,temp_body,temp_title])
+                all_data_list_of_lists.append([temp_ad_name,temp_campaign_name,temp_country,temp_thumbnail_url,temp_body,temp_title])
                     
             next_page = data.get('paging').get('next')
             if type(next_page) == str:
