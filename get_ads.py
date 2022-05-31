@@ -50,7 +50,7 @@ if st.button('Get Ads!'):
 
     URL = "https://graph.facebook.com/" + str(fb_version)+ "/act_"+ str(selected_act_id)+"/ads"
 
-    PARAMS = {'fields':"campaign{name},name,effective_status,adcreatives{thumbnail_url}",
+    PARAMS = {'fields':"campaign{name},name,effective_status,adcreatives{body,title,thumbnail_url}",
             "time_range":"{'since': '"+str(since_input)+"' ,'until': '"+str(until_input)+"'}",
             "level":"campaign",
             "limit": str(pagination_limit),
@@ -95,20 +95,24 @@ if st.button('Get Ads!'):
                 # This means that the ad has multiple options for body and title. The process below will retrieve all the options-
                 fields = [AdCreative.Field.asset_feed_spec]
                 creative.api_get(fields=fields)
-                asset_data = creative[AdCreative.Field.asset_feed_spec]._json
-                bodies = asset_data.get('bodies')
-                body_list = []
-                for body in bodies:
-                    temp_body = body.get('text')
-                    print(temp_body)
-                    body_list.append(temp_body)
-                titles = asset_data.get('titles')
-                title_list = []
-                for title in titles:
-                    temp_title = title.get('text')
-                    title_list.append(temp_title)
-                temp_body = str(body_list).replace('[','').replace(']','').replace(',','\n')
-                temp_title = str(title_list).replace('[','').replace(']','').replace(',','\n')
+                try:
+                    asset_data = creative[AdCreative.Field.asset_feed_spec]._json
+                    bodies = asset_data.get('bodies')
+                    body_list = []
+                    for body in bodies:
+                        temp_body = body.get('text')
+                        print(temp_body)
+                        body_list.append(temp_body)
+                    titles = asset_data.get('titles')
+                    title_list = []
+                    for title in titles:
+                        temp_title = title.get('text')
+                        title_list.append(temp_title)
+                    temp_body = str(body_list).replace('[','').replace(']','').replace(',','\n')
+                    temp_title = str(title_list).replace('[','').replace(']','').replace(',','\n')
+                except:
+                    temp_body = temp_adcreative_data.get('body')
+                    temp_title = temp_adcreative_data.get('title')
                 
                 all_data_list_of_lists.append([temp_ad_name,temp_campaign_name,temp_country,temp_thumbnail_url,temp_body,temp_title])
                     
