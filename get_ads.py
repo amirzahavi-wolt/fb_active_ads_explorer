@@ -77,9 +77,8 @@ if st.button('Get Ads!'):
                 temp_adcreative_id = temp_adcreative_data.get('id')
                 temp_image_url = temp_adcreative_data.get('thumbnail_url')
                 # edit the temp_image_url in order to increase the thumbnail size:
-                if 'https://video' in temp_image_url:
-                    params = {}
-                else:
+                matches = ["&h=","w="]
+                if all(x in temp_image_url for x in matches):
                     temp_h = int(temp_image_url.split("&h=")[1].split("&")[0])
                     temp_w = int(temp_image_url.split("w=")[1].split("&h=")[0])
                     # get the rescaled image using fb business SDK call:
@@ -89,6 +88,8 @@ if st.button('Get Ads!'):
                         'thumbnail_width': temp_w * scale_multiplier,
                         'thumbnail_height': temp_h * scale_multiplier,
                     }
+                else:
+                    params = {}
                 creative.api_get(fields=fields, params=params)
                 temp_thumbnail_url = creative[AdCreative.Field.thumbnail_url]
                 # moving on to body and title:
