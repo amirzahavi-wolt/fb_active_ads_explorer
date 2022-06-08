@@ -28,7 +28,7 @@ st.write('''This service retrieves the current active ads from the selected FB a
 
 selected_account = st.sidebar.radio(
      "Choose the FB account you want to get data for",
-     ('Courier', 'W@W', 'Merchant','Retargeting','Recruitment','Brand','Smartly','UA'))
+     ('Courier', 'W@W', 'Merchant','Retargeting','Recruitment','Brand','Smartly','UA','UA-Test'))
 
 country_input = st.text_input("Country 3-digit code", 'ISR')
 since_input = st.text_input("Since date YYYY-MM-DD", since)
