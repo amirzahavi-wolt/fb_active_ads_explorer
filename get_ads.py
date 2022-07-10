@@ -105,6 +105,7 @@ if st.button('Get Ads!'):
                         temp_thumbnail_url = temp_asset_feed_spec_str.split('"thumbnail_url": "')[1].split('"')[0]
                 # moving on to body and title:
                 # This means that the ad has multiple options for body and title. The process below will retrieve all the options-
+                creative = AdCreative(temp_adcreative_id)
                 fields = [AdCreative.Field.asset_feed_spec]
                 creative.api_get(fields=fields)
                 try:
