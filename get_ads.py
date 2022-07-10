@@ -78,6 +78,7 @@ if st.button('Get Ads!'):
                 temp_image_url = temp_adcreative_data.get('thumbnail_url')
                 # edit the temp_image_url in order to increase the thumbnail size:
                 matches = ["&h=","w="]
+                matches = ["&h=","w="]
                 if all(x in temp_image_url for x in matches):
                     temp_h = int(temp_image_url.split("&h=")[1].split("&")[0])
                     temp_w = int(temp_image_url.split("w=")[1].split("&h=")[0])
@@ -88,10 +89,20 @@ if st.button('Get Ads!'):
                         'thumbnail_width': temp_w * scale_multiplier,
                         'thumbnail_height': temp_h * scale_multiplier,
                     }
+                    creative.api_get(fields=fields, params=params)
+                    temp_thumbnail_url = creative[AdCreative.Field.thumbnail_url]
+                if 'c0.5000x0.5000' in temp_image_url:
+                    temp_thumbnail_url = temp_image_url
                 else:
-                    params = {}
-                creative.api_get(fields=fields, params=params)
-                temp_thumbnail_url = creative[AdCreative.Field.thumbnail_url]
+                    try:
+                        creative = AdCreative(temp_adcreative_id)
+                        creative.api_get(fields=fields)
+                        temp_thumbnail_url = creative[AdCreative.Field.thumbnail_url]
+                    except:
+                        creative = AdCreative(temp_adcreative_id)
+                        temp_asset_feed_spec = creative.api_get(fields=fields)
+                        temp_asset_feed_spec_str = str(temp_asset_feed_spec)
+                        temp_thumbnail_url = temp_asset_feed_spec_str.split('"thumbnail_url": "')[1].split('"')[0]
                 # moving on to body and title:
                 # This means that the ad has multiple options for body and title. The process below will retrieve all the options-
                 fields = [AdCreative.Field.asset_feed_spec]
